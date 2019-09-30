@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Select Area Test</title>
+	<style type="text/css">
+		body {
+			margin: 0;
+			padding: 0;
+		}
+	</style>
+</head>
+<body>
+	<div id = "selectionArea"></div>
+</body>
+<script type="text/javascript">
+
+	function getSelectAreaDiv () {
+		let selectAreaDiv = document.createElement('div');
+		selectAreaDiv.style.border = '1.5px dotted #000';
+		selectAreaDiv.style.position = 'absolute';
+		selectAreaDiv.setAttribute("id","selectArea");
+		selectAreaDiv.style.display = "block";
+		return selectAreaDiv;
+	}
+
+	function reCalc(div, x1, x2, y1, y2) {
+		let x3 = Math.min(x1,x2);
+		let x4 = Math.max(x1,x2);
+		let y3 = Math.min(y1,y2);
+		let y4 = Math.max(y1,y2);
+		
+		div.style.left = x3 + 'px';
+		div.style.top = y3 + 'px';
+		div.style.width = x4 - x3 + 'px';
+		div.style.height = y4 - y3 + 'px';
+		// console.log(x1, y1, x2, y2, x3, y3,x4, y4);
+	}
+
+	(function() {
+		document.addEventListener('contextmenu', event => event.preventDefault());
+		document.getElementsByTagName('body')[0].appendChild(getSelectAreaDiv());
+		var selectionArea = document.getElementById("selectArea");
+
+		let init_x1 = x1 = 0;
+		let init_y1 = y1 = 0;
+		let init_x2 = x2 = 0;
+		let init_y2 = y2 = 0;
+
+		var startTime;
+		var endTime;
+		var tresholdTouchDuration = 500;
+		var longTouched;
+		var onlongtouch = function () {
+			console.log("Long touch detected.");
+		}
+
+		ontouchstart  = function(e) {
+			console.log("touch select start");
+			selectArea.style.display = "block";	
+			x1 = e.touches[0].clientX;
+			y1 = e.touches[0].clientY;
+			x2 = e.touches[0].clientX;
+			y2 = e.touches[0].clientY;
+			reCalc(selectionArea, x1, x2, y1, y2);
+			startTime = new Date();
+		};
+
+		onmousedown = function(e) {
+			console.log(" select start");
+			selectArea.style.display = "block";	
+			x1 = e.clientX;
+			y1 = e.clientY;
+			x2 = e.clientX;
+			y2 = e.clientY;
+			reCalc(selectionArea, x1, x2, y1, y2);
+		};
+
+		ontouchmove = function(e) {
+			console.log("touch select span");	
+			x2 = e.touches[0].clientX;// - selectArea.x;
+			y2 = e.touches[0].clientY;// - selectArea.y;
+			reCalc(selectionArea, x1, x2, y1, y2);
+		};
+
+		onmousemove = function(e) {
+			console.log("select span");	
+			x2 = e.clientX;// - selectArea.x;
+			y2 = e.clientY;// - selectArea.y;
+			reCalc(selectionArea, x1, x2, y1, y2);
+		};
+
+		ontouchend = onmouseup = function(e) {
+			console.log("select end");			
+			// selectArea.style.display = "none";
+			endTime = new Date();
+			let difference = endTime - startTime;
+			console.log("Touched...duration "+(difference));
+			if (difference > tresholdTouchDuration) {
+				console.log("longTouched....");
+			}
+		};
+
+	})();
+</script>
+</html>
